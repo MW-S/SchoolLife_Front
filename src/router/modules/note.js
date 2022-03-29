@@ -2,23 +2,23 @@
 
 import Layout from '@/layout'
 
-const taskRouter = {
-  path: '/task',
+const projectRouter = {
+  path: '/note',
   component: Layout,
   redirect: 'noRedirect',
-  name: 'Task',
+  name: 'Note',
   meta: {
-    title: 'Tasks',
+    title: 'Notes',
     icon: 'chart'
   },
   children: [
     {
       path: 'index',
-      component: () => import('@/views/task/index'),
-      name: 'TaskList',
-      meta: { title: 'Task List', noCache: true }
+      component: () => import('@/views/note/index'),
+      name: 'NoteList',
+      meta: { title: 'Note List', noCache: true }
     }
   ]
 }
 
-export default taskRouter
+export default projectRouter

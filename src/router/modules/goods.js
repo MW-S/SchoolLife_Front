@@ -3,20 +3,20 @@
 import Layout from '@/layout'
 
 const projectRouter = {
-  path: '/project',
+  path: '/goods',
   component: Layout,
   redirect: 'noRedirect',
-  name: 'Project',
+  name: 'Goods',
   meta: {
-    title: 'Projects',
+    title: 'Goods',
     icon: 'chart'
   },
   children: [
     {
       path: 'index',
-      component: () => import('@/views/project/index'),
-      name: 'ProjectList',
-      meta: { title: 'Project List', noCache: true }
+      component: () => import('@/views/goods/index'),
+      name: 'Goods',
+      meta: { title: 'Goods List', noCache: true }
     }
   ]
 }

@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <el-button style="margin-bottom: 10px;" @click="handleCreate">添加</el-button>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -10,56 +11,28 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <!-- <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="Name" min-width="150px">
+      </el-table-column> -->
+      <el-table-column label="宿舍牌号" width="150px" align="center">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Type" width="110px" align="center">
+      <el-table-column label="所属栋" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.type }}</span>
+          <span>{{ row.location }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Descript" align="center" width="95">
-        <template slot-scope="{row}">
-          <span>{{ row.descript }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Project" align="center" width="95">
-        <template slot-scope="{row}">
-          <span>{{ row.projectName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Executor" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <span>{{ row.userName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.state | statusFilter">
-            {{ row.state | statusCOntent }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button v-if="listQuery.isAdmin" type="primary" size="mini" @click="handleUpdate(row)">
-            Edit
+          <el-button  type="primary" size="mini" @click="handleUpdate(row)">
+            编辑
           </el-button>
-          <el-button v-if="row.state!=1" size="mini" type="success" @click="handleModifyStatus(row,1)">
-            FInish
-          </el-button>
-          <el-button v-if="row.state!=0" size="mini" @click="handleModifyStatus(row,0)">
-            Restart
-          </el-button>
-          <el-button v-if="listQuery.isAdmin" size="mini" type="danger" @click="handleDelete(row,$index)">
-            Delete
+          <el-button  size="mini" type="danger" @click="handleDelete(row,$index)">
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -68,23 +41,20 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Name" prop="name">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="display: flex-direction: column;align-items: center;justify-content: center;">
+        <el-form-item label="宿舍牌号" prop="name">
           <el-input v-model="temp.name" type="text" />
         </el-form-item>
-        <el-form-item label="Type" prop="type">
-          <el-input v-model="temp.type" type="text" />
-        </el-form-item>
-        <el-form-item label="Descript" prop="descript">
-          <el-input v-model="temp.descript" type="textarea" />
+        <el-form-item label="所属栋" prop="location">
+          <el-input v-model="temp.location" type="text" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          Cancel
+          取消
         </el-button>
-        <el-button type="primary" @click="updateData()">
-          Confirm
+        <el-button type="primary" @click="saveData()">
+          确定
         </el-button>
       </div>
     </el-dialog>
@@ -114,7 +84,7 @@
 </template>
 
 <script>
-import { fetchList, fetchTask, createTask, updateTask, delTask } from '@/api/task'
+import { getList, getById, save, delByIds } from '@/api/common'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -134,7 +104,7 @@ const calendarTypeOptions = [
 // }, {})
 
 export default {
-  name: 'Task',
+  name: 'Dormitory',
   components: { Pagination, Upload },
   directives: { waves },
   filters: {
@@ -153,6 +123,7 @@ export default {
   },
   data() {
     return {
+      target: "dormitory",
       tableKey: 0,
       list: null,
       total: 0,
@@ -174,8 +145,8 @@ export default {
       temp: {
         id: undefined,
         name: '',
-        type: '',
-        descript: ''
+        location: '',
+        pictures: undefined
       },
       tempRow: '',
       users: [],
@@ -278,10 +249,9 @@ export default {
     },
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
+      getList(this.target, this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.size
-
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
@@ -337,20 +307,16 @@ export default {
     },
     handleCreate() {
       this.resetTemp()
-      fetchTask(1).then(response => {
-        this.users = response.data.data
-      })
-      this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData() {
+    saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createTask(this.temp).then(() => {
-            this.list.unshift(this.temp)
+          save(this.target, this.temp).then(() => {
+            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -362,42 +328,13 @@ export default {
         }
       })
     },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row)
-      this.dialogStatus = 'update'
-      // fetchTask(row.id).then(response => {
-      //   this.temp = response.data.data
-      //   this.dialogFormVisible = true
-      //   this.dialogStatus = 'update'
-      // })
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          // tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateTask(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
+    handleUpdate(obj){
+      this.dialogFormVisible = true;
+      this.temp = obj;
     },
     handleDelete(row, index) {
-      delTask(row).then(() => {
-        const index = this.list.findIndex(v => v.id === this.temp.id)
-        this.list.splice(index, 1, this.temp)
+      delByIds(this.target, {ids: [row.id]} ).then(() => {
+        this.getList()
         this.dialogFormVisible = false
         this.$notify({
           title: 'Success',

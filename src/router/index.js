@@ -9,10 +9,18 @@ import Layout from '@/layout'
 /* Router Modules */
 import chartsRouter from './modules/charts'
 
-import projectRouter from './modules/project'
-import reformRouter from './modules/reform'
+import canteenRouter from './modules/canteen'
+import carRouter from './modules/car'
+import deliveryOrderRouter from './modules/delivery-order'
+import dormitoryRouter from './modules/dormitory'
+import foodRouter from './modules/food'
+import goodsRouter from './modules/goods'
+import noteRouter from './modules/note'
+import parkingRouter from './modules/parking'
+import seatRouter from './modules/seat'
+import vindicateRouter from './modules/vindicate'
+
 import registerRouter from './modules/register'
-import taskRouter from './modules/task'
 import userRouter from './modules/user'
 
 /**
@@ -137,11 +145,18 @@ export const asyncRoutes = [
   },
 
   /** when your routing map is too long, you can split it into small modules **/
-
-  projectRouter,
-  taskRouter,
+  canteenRouter,
+  carRouter,
+  deliveryOrderRouter,
+  dormitoryRouter,
+  foodRouter,
+  goodsRouter,
+  noteRouter,
+  parkingRouter,
+  seatRouter,
+  vindicateRouter,
+  
   userRouter,
-  reformRouter,
   chartsRouter,
 
   {

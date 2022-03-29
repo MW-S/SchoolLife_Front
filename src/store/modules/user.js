@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout, getInfo, createUser } from '@/api/user'
 import { getJWTToken, setJWTToken, removeJWTToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -29,13 +29,25 @@ const mutations = {
 }
 
 const actions = {
+  // user register
+  register({ commit }, userInfo) {
+    return new Promise((resolve, reject) => {
+      createUser(userInfo).then(response => {
+        const { data } = response
+        console.log(response)
+        resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
   // user login
   login({ commit }, userInfo) {
     const { userName, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ userName: userName.trim(), password: password }).then(response => {
         const { data } = response
-        // commit('SET_TOKEN', data.token)
         setJWTToken(data.token)
         resolve()
       }).catch(error => {

@@ -55,7 +55,7 @@
         <el-button @click="dialogJoinVisible = false">
           Cancel
         </el-button>
-        <el-button type="primary" @click="join()">
+        <el-button type="primary" @click="">
           Confirm
         </el-button>
       </div>
@@ -71,8 +71,6 @@ import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 // import Search from '@/components/HeaderSearch'
-
-import { joinProject } from '@/api/project'
 
 export default {
   components: {
@@ -110,15 +108,15 @@ export default {
         code: this.joinCode
       }
       const tempData = Object.assign({}, obj)
-      joinProject(tempData).then(response => {
-        this.dialogJoinVisible = false
-        this.$notify({
-          title: 'Success',
-          message: 'Update Successfully',
-          type: 'success',
-          duration: 2000
-        })
-      })
+      // joinProject(tempData).then(response => {
+      //   this.dialogJoinVisible = false
+      //   this.$notify({
+      //     title: 'Success',
+      //     message: 'Update Successfully',
+      //     type: 'success',
+      //     duration: 2000
+      //   })
+      // })
     }
   }
 }

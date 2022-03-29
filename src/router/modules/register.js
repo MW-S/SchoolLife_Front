@@ -5,21 +5,10 @@
 const registerRouter = {
   path: '/register',
   // component: Layout,
-  redirect: 'noRedirect',
   hidden: true,
-  name: 'Register',
-  meta: {
-    title: 'Register',
-    icon: 'table'
-  },
-  children: [
-    {
-      path: 'index',
-      component: () => import('@/views/register/index'),
-      name: 'RegisterPage',
-      meta: { title: 'Register Page', noCache: true }
-    }
-  ]
+  component: () => import('@/views/register/index'),
+  name: 'RegisterPage',
+  meta: { title: 'Register Page', noCache: true }
 }
 
 export default registerRouter
