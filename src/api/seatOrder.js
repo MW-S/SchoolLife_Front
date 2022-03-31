@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
 export function getList(query) {
   return request({
@@ -30,7 +31,6 @@ export function delByIds(ids) {
     url: '/seat/delOrderByIds',
     method: 'post',
     params: ids,
-    params: query,
     paramsSerializer: params => {
       return qs.stringify(params, {
         indices: false

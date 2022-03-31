@@ -26,10 +26,18 @@
           <span>{{ row.location }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="作为状态"  align="center" >
+        <template slot-scope="{row}">
+          <span>{{ stateText[row.state] }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button  type="primary" size="mini" @click="handleUpdate(row)">
             编辑
+          </el-button>
+          <el-button  type="primary" size="mini" @click="handleModifyStatus(row.id, row.state)">
+            {{row.state == "false"?"占用":"空闲" }}
           </el-button>
           <el-button  size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
@@ -47,6 +55,12 @@
         </el-form-item>
         <el-form-item label="所属教室" prop="location">
           <el-input v-model="temp.location" type="text" />
+        </el-form-item>
+        <el-form-item label="状态" prop="code">
+          <el-select v-model="temp.state" >
+            <el-option key="false" label="空闲" value="false"></el-option>
+            <el-option key="true" label="占用" value="true"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -123,6 +137,7 @@ export default {
   },
   data() {
     return {
+      stateText:{ "false" : "空闲", "true" : "已占用"},
       target: "seat",
       tableKey: 0,
       list: null,
@@ -262,25 +277,20 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
-    handleModifyStatus(row, status) {
-      this.temp = Object.assign({}, row)
-      this.temp.state = status
-      if (status === 1) {
-        this.dialogAddFile = true
-      } else {
-        const tempData = Object.assign({}, this.temp)
-        updateTask(tempData).then(() => {
-          const index = this.list.findIndex(v => v.id === tempData.id)
-          this.list.splice(index, 1, tempData)
-          this.dialogFormVisible = false
-          this.$notify({
-            title: 'Success',
-            message: 'Update Successfully',
-            type: 'success',
-            duration: 2000
-          })
-        })
-      }
+    handleModifyStatus(id, state) {
+       this.resetTemp();
+      this.temp.id = id;
+      this.temp.state = (state == "false"? "true":"false");
+      save(this.target, this.temp).then(() => {
+            this.getList()
+            this.dialogFormVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Created Successfully',
+              type: 'success',
+              duration: 2000
+            })
+      })
     },
     sortChange(data) {
       const { prop, order } = data

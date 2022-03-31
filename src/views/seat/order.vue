@@ -56,7 +56,7 @@
           <el-select v-model="temp.seatId" placeholder="请选择">
             <el-option
               v-for="item in seats"
-              :disabled="hasSeat(item.seatId)"
+              :disabled="hasSeat(item.id)"
               :key="item.id"
               :label="item.location + '-' + item.code"
               :value="item.id">
@@ -67,7 +67,7 @@
           <el-select v-model="temp.userId" placeholder="请选择">
             <el-option
               v-for="item in users"
-              :disabled="hasUser(item.userId)"
+              :disabled="hasUser(item.id)"
               :key="item.id"
               :label="item.name"
               :value="item.id">
@@ -77,10 +77,10 @@
         <el-form-item label="使用时间" prop="useTime">
           <el-select v-model="temp.useTime" value-key="value" placeholder="请选择">
             <el-option
-              v-for="item in times"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              v-for="(item, index) in times"
+              :key="index"
+              :label="item"
+              :value="index">
             </el-option>
           </el-select>
         </el-form-item>
@@ -161,32 +161,14 @@ export default {
   },
   data() {
     return {
-      times: [
-        {
-          label: "1小时",
-          value: 1
-        },
-         {
-          label: "2小时",
-          value: 2
-        },
-        {
-          label: "3小时",
-          value: 3
-        },
-         {
-          label: "4小时",
-          value: 4
-        },
-        {
-          label: "5小时",
-          value: 5
-        },
-        {
-          label: "6小时",
-          value: 6
-        }
-      ],
+      times:{ 
+          "1": "1小时",
+          "2": "2小时",
+          "3": "3小时",
+          "4": "4小时",
+          "5": "5小时",
+          "6": "6小时"
+      },
       tableKey: 0,
       list: [],
       seats: [],
@@ -334,8 +316,8 @@ export default {
     },
     hasSeat(id){
       var res = false;
-      this.seats.forEach(item=>{
-        if(item.id == id){
+      this.list.forEach(item=>{
+        if(item.seatId == id){
           res =  true;
         }
       })
@@ -343,8 +325,8 @@ export default {
     },
     hasUser(id){
       var res = false;
-      this.users.forEach(item=>{
-        if(item.id == id){
+      this.list.forEach(item=>{
+        if(item.userId == id){
           res =  true;
         }
       })
