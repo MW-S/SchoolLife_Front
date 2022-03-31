@@ -18,22 +18,22 @@
       </el-table-column> -->
       <el-table-column label="座位" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.seatId }}</span>
+          <span>{{ getSeatName(row.seatId) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="使用人" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.userId }}</span>
+          <span>{{ getUserName(row.userId) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="使用时长"  align="center" >
         <template slot-scope="{row}">
-          <span>{{ row.useTime }}</span>
+          <span>{{ row.useTime + "小时"}}</span>
         </template>
       </el-table-column>
       <el-table-column label="开始时间"  align="center" >
         <template slot-scope="{row}">
-          <span>{{ row.gtmCreate }}</span>
+          <span>{{ row.gmtCreate }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
@@ -53,13 +53,36 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="display: flex-direction: column;align-items: center;justify-content: center;">
         <el-form-item label="座位" prop="seatId">
-          <el-input v-model="temp.seatId" type="text" />
+          <el-select v-model="temp.seatId" placeholder="请选择">
+            <el-option
+              v-for="item in seats"
+              :disabled="hasSeat(item.seatId)"
+              :key="item.id"
+              :label="item.location + '-' + item.code"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="使用人" prop="userId">
-          <el-input v-model="temp.userId" type="text" />
+          <el-select v-model="temp.userId" placeholder="请选择">
+            <el-option
+              v-for="item in users"
+              :disabled="hasUser(item.userId)"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="使用时间" prop="useTime">
-          <el-input v-model="temp.useTime" type="text" />
+          <el-select v-model="temp.useTime" value-key="value" placeholder="请选择">
+            <el-option
+              v-for="item in times"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -97,6 +120,8 @@
 </template>
 
 <script>
+import * as user from '@/api/user'
+import * as common from '@/api/common'
 import { getList, getById, save, delByIds } from '@/api/seatOrder'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -136,8 +161,36 @@ export default {
   },
   data() {
     return {
+      times: [
+        {
+          label: "1小时",
+          value: 1
+        },
+         {
+          label: "2小时",
+          value: 2
+        },
+        {
+          label: "3小时",
+          value: 3
+        },
+         {
+          label: "4小时",
+          value: 4
+        },
+        {
+          label: "5小时",
+          value: 5
+        },
+        {
+          label: "6小时",
+          value: 6
+        }
+      ],
       tableKey: 0,
-      list: null,
+      list: [],
+      seats: [],
+      users: [],
       total: 0,
       listLoading: true,
       listQuery: {
@@ -182,6 +235,8 @@ export default {
   },
   created() {
     this.listQuery.isAdmin = this.$store.state.user.isAdmin
+    this.getSeats()
+    this.getUsers()
     this.getList()
   },
   methods: {
@@ -258,6 +313,68 @@ export default {
     }, */
     resetAdd() {
       this.addArr = []
+    },
+    getSeatName(id){
+      var res = "无"
+      this.seats.forEach(item=>{
+        if(item.id == id){
+          res =  item.location + "-" + item.code;
+        }
+      })
+      return res;
+    },
+    getUserName(id){
+       var res = "无"
+      this.users.forEach(item=>{
+        if(item.id == id){
+          res =  item.name;
+        }
+      })
+      return res;
+    },
+    hasSeat(id){
+      var res = false;
+      this.seats.forEach(item=>{
+        if(item.id == id){
+          res =  true;
+        }
+      })
+      return res;
+    },
+    hasUser(id){
+      var res = false;
+      this.users.forEach(item=>{
+        if(item.id == id){
+          res =  true;
+        }
+      })
+      return res;
+    },
+    getUsers(){
+      this.listLoading = true
+      user.getList({
+        page: 1,
+        size: 100,
+      }).then(response => {
+        this.users = response.data.data
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
+    getSeats(){
+      this.listLoading = true
+      common.getList("seat", {
+        page: 1,
+        size: 100,
+      }).then(response => {
+        this.seats = response.data.data
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
     },
     getList() {
       this.listLoading = true
@@ -342,7 +459,7 @@ export default {
     },
     handleUpdate(obj){
       this.dialogFormVisible = true;
-      this.temp = obj;
+      this.temp = Object.assign({},obj);
     },
     handleDelete(row, index) {
       delByIds( {ids: [row.id]} ).then(() => {

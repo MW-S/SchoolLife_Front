@@ -33,12 +33,12 @@
       </el-table-column>
       <el-table-column label="发布人"  align="center" >
         <template slot-scope="{row}">
-          <span>{{ row.userId }}</span>
+          <span>{{ getUserName(row.userId) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="购买人"  align="center" >
         <template slot-scope="{row}">
-          <span>{{ row.buyerId }}</span>
+          <span>{{ getUserName(row.buyerId) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="审核状态"  align="center" >
@@ -77,16 +77,40 @@
           <el-input v-model="temp.info" type="textarea" />
         </el-form-item>
         <el-form-item v-if="temp.id!=undefined" label="发布人" prop="userId">
-          <el-input v-model="temp.userId" type="text" />
+         <el-select v-model="temp.userId" placeholder="请选择">
+            <el-option
+              v-for="item in users"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item v-if="temp.id!=undefined" label="购买人" prop="buyerId">
-          <el-input v-model="temp.buyerId" type="text" />
+          <el-select v-model="temp.buyerId" placeholder="请选择">
+            <el-option
+              v-for="item in users"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item v-if="temp.id!=undefined" label="审核状态" prop="auditState">
-          <el-select v-model="temp.auditState"  />
+          <el-select v-model="temp.auditState"  placeholder="请选择">
+             <el-option
+              v-for="(item, index) in auditStateText"
+              :key="index"
+              :label="item"
+              :value="index">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item v-if="temp.id!=undefined" label="物品状态" prop="state">
-          <el-select v-model="temp.state"  />
+          <el-select v-model="temp.state" placeholder="请选择" >
+            <el-option key="false" label="未售出" value="false" />
+            <el-option key="true" label="已售出" value="true" />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -124,6 +148,7 @@
 </template>
 
 <script>
+import * as user from '@/api/user'
 import { getList, getById, save, delByIds } from '@/api/common'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -164,10 +189,11 @@ export default {
   data() {
     return {
       target: "goods",
-      auditStateText: ["待审核", "已过审", "未过审"],
-      stateText: ["未出售", "已出售"],
+      auditStateText:{"0": "待审核", "1": "已过审", "2": "未过审"},
+      stateText: {"false" : "未出售", "true": "已出售"},
       tableKey: 0,
-      list: null,
+      list: [],
+      users: [],
       total: 0,
       listLoading: true,
       listQuery: {
@@ -186,9 +212,6 @@ export default {
       showReviewer: false,
       temp: {
         id: undefined,
-        name: '',
-        location: '',
-        pictures: undefined
       },
       tempRow: '',
       users: [],
@@ -212,6 +235,7 @@ export default {
   },
   created() {
     this.listQuery.isAdmin = this.$store.state.user.isAdmin
+    this.getUsers()
     this.getList()
   },
   methods: {
@@ -289,6 +313,28 @@ export default {
     resetAdd() {
       this.addArr = []
     },
+    getUserName(id){
+       var res = "未指派"
+      this.users.forEach(item=>{
+        if(item.id == id){
+          res =  item.name;
+        }
+      })
+      return res;
+    },
+    getUsers(){
+      this.listLoading = true
+      user.getList({
+        page: 1,
+        size: 100,
+      }).then(response => {
+        this.users = response.data.data
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
     getList() {
       this.listLoading = true
       getList(this.target, this.listQuery).then(response => {
@@ -341,10 +387,7 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        name: '',
-        type: '',
-        descript: '',
-        state: ''
+        state: 0
       }
     },
     handleCreate() {
@@ -372,7 +415,7 @@ export default {
     },
     handleUpdate(obj){
       this.dialogFormVisible = true;
-      this.temp = obj;
+      this.temp = Object.assign({},obj);
     },
     handleDelete(row, index) {
       delByIds(this.target, {ids: [row.id]} ).then(() => {

@@ -16,19 +16,19 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="车位编号" width="150px" align="center">
+      <el-table-column label="车位编号"  align="center">
         <template slot-scope="{row}">
-          <span>{{ row.parkingId }}</span>
+          <span>{{ getName(row.parkingId, 1) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆编号" width="150px" align="center">
+      <el-table-column label="车牌号"  align="center">
         <template slot-scope="{row}">
-          <span>{{ row.carId }}</span>
+          <span>{{ getName(row.carId, 0)}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="使用人"  align="center" >
+      <el-table-column label="创建时间"  align="center" >
         <template slot-scope="{row}">
-          <span>{{ row.user }}</span>
+          <span>{{ row.gmtCreate }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
@@ -48,10 +48,26 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="display: flex-direction: column;align-items: center;justify-content: center;">
         <el-form-item label="车位编号" prop="parkingId">
-          <el-input v-model="temp.parkingId" type="text" />
+          <el-select v-model="temp.parkingId" placeholder="请选择">
+            <el-option
+              v-for="item in parkings"
+              :disabled="item.state=='true'"
+              :key="item.id"
+              :label="item.code"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="车辆编号" prop="carId">
-          <el-input v-model="temp.carId" type="text" />
+          <el-select v-model="temp.carId" placeholder="请选择">
+            <el-option
+              v-for="item in cars"
+              :disabled="haseCar(item.id)"
+              :key="item.id"
+              :label="item.number"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -89,6 +105,7 @@
 </template>
 
 <script>
+import * as common from '@/api/common'
 import { getList, getById, save, delByIds } from '@/api/parkingOrder'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -129,8 +146,10 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       total: 0,
+      parkings: [],
+      cars: [],
       listLoading: true,
       listQuery: {
         page: 1,
@@ -174,6 +193,8 @@ export default {
   },
   created() {
     this.listQuery.isAdmin = this.$store.state.user.isAdmin
+    this.getCars()
+    this.getParkings()
     this.getList()
   },
   methods: {
@@ -251,11 +272,62 @@ export default {
     resetAdd() {
       this.addArr = []
     },
+    getName(id, type = 0){
+       var item ;
+       var list = (type==0?this.cars:this.parkings)
+      for(var index in list){
+        item = list[index];
+        if(item.id == id){
+          return (type==0?item.number:item.code)
+        }
+      }
+      return "NULL"
+    },
+    haseCar(carId){
+      var res = false;
+      this.list.forEach(item=>{
+        if(item.carId == carId){
+          res =  true;
+        }
+      })
+      return res;
+    },
     getList() {
       this.listLoading = true
       getList( this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.size
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
+    getCars() {
+      this.listLoading = true
+      common.getList("car", {
+        page: 1,
+        size: 100,
+      }).then(response => {
+        this.cars = response.data.data
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
+    getParkings() {
+      this.listLoading = true
+      this.parkings = []
+      common.getList("parking", {
+        page: 1,
+        size: 100,
+      }).then(response => {
+        response.data.data.forEach(item=>{
+          // if(item.state === "false"){
+            this.parkings.push(item)
+          // }
+        })
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
@@ -315,6 +387,7 @@ export default {
         if (valid) {
           save( this.temp).then(() => {
             this.getList()
+            this.getParkings()
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -328,7 +401,7 @@ export default {
     },
     handleUpdate(obj){
       this.dialogFormVisible = true;
-      this.temp = obj;
+      this.temp = Object.assign({},obj);
     },
     handleDelete(row, index) {
       delByIds( {ids: [row.id]} ).then(() => {

@@ -3,20 +3,26 @@
 import Layout from '@/layout'
 
 const projectRouter = {
-  path: '/note',
+  path: '/entertainment',
   component: Layout,
   redirect: 'noRedirect',
-  name: 'Note',
+  name: 'Entertainment',
   meta: {
-    title: 'Notes',
+    title: '娱乐管理',
     icon: 'chart'
   },
   children: [
     {
-      path: 'index',
+      path: 'note',
       component: () => import('@/views/note/index'),
       name: 'NoteList',
-      meta: { title: 'Note List', noCache: true }
+      meta: { title: '动态列表', noCache: true }
+    },
+    {
+      path: 'vindicate',
+      component: () => import('@/views/vindicate/index'),
+      name: 'VindicateList',
+      meta: { title: '告白列表', noCache: true }
     }
   ]
 }

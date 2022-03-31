@@ -8,7 +8,7 @@ const projectRouter = {
   redirect: 'noRedirect',
   name: 'Goods',
   meta: {
-    title: 'Goods',
+    title: '闲置物品管理',
     icon: 'chart'
   },
   children: [
@@ -16,7 +16,7 @@ const projectRouter = {
       path: 'index',
       component: () => import('@/views/goods/index'),
       name: 'Goods',
-      meta: { title: 'Goods List', noCache: true }
+      meta: { title: '闲置物品列表', noCache: true }
     }
   ]
 }

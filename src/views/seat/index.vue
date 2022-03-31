@@ -42,7 +42,7 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="display: flex-direction: column;align-items: center;justify-content: center;">
-        <el-form-item label="座位号" prop="name">
+        <el-form-item label="座位号" prop="code">
           <el-input v-model="temp.code" type="text" />
         </el-form-item>
         <el-form-item label="所属教室" prop="location">
@@ -330,7 +330,7 @@ export default {
     },
     handleUpdate(obj){
       this.dialogFormVisible = true;
-      this.temp = obj;
+      this.temp = Object.assign({},obj);
     },
     handleDelete(row, index) {
       delByIds(this.target, {ids: [row.id]} ).then(() => {

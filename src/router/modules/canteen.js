@@ -8,7 +8,7 @@ const projectRouter = {
   redirect: 'noRedirect',
   name: 'Canteen',
   meta: {
-    title: 'Canteens',
+    title: '饭堂管理',
     icon: 'chart'
   },
   children: [
@@ -16,7 +16,13 @@ const projectRouter = {
       path: 'index',
       component: () => import('@/views/canteen/index'),
       name: 'CanteenList',
-      meta: { title: 'Canteen List', noCache: true }
+      meta: { title: '饭堂列表', noCache: true }
+    },
+    {
+      path: 'food',
+      component: () => import('@/views/food/index'),
+      name: 'FoodList',
+      meta: { title: '菜谱列表', noCache: true }
     }
   ]
 }

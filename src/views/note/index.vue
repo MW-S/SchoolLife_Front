@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column label="所属用户" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.userId }}</span>
+          <span>{{ getUserName(row.userId) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态"  align="center" >
@@ -51,10 +51,21 @@
           <el-input v-model="temp.content" type="text" />
         </el-form-item>
         <el-form-item label="所属用户" prop="userId">
-          <el-input v-model="temp.userId" type="text" />
+          <el-select v-model="temp.userId" placeholder="请选择">
+            <el-option
+              v-for="item in users"
+              :disabled="hasUser(item.userId)"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="state">
-          <el-select v-model="temp.state"  />
+          <el-select v-model="temp.state" placeholder="请选择">
+            <el-option key="false" label="不可见" value="false" />
+            <el-option key="true" label="可见" value="true" />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -92,6 +103,7 @@
 </template>
 
 <script>
+import * as user from '@/api/user'
 import { getList, getById, save, delByIds } from '@/api/common'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -134,7 +146,8 @@ export default {
       target: "note",
       stateText: { "false" : "不可见", "true" : "可见" },
       tableKey: 0,
-      list: null,
+      list: [],
+      users: [],
       total: 0,
       listLoading: true,
       listQuery: {
@@ -179,6 +192,7 @@ export default {
   },
   created() {
     this.listQuery.isAdmin = this.$store.state.user.isAdmin
+    this.getUsers()
     this.getList()
   },
   methods: {
@@ -255,6 +269,37 @@ export default {
     }, */
     resetAdd() {
       this.addArr = []
+    },
+    getUserName(id){
+       var res = "无"
+      this.users.forEach(item=>{
+        if(item.id == id){
+          res =  item.name;
+        }
+      })
+      return res;
+    },
+    hasUser(id){
+      var res = false;
+      this.users.forEach(item=>{
+        if(item.id == id){
+          res =  true;
+        }
+      })
+      return res;
+    },
+    getUsers(){
+      this.listLoading = true
+      user.getList({
+        page: 1,
+        size: 100,
+      }).then(response => {
+        this.users = response.data.data
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
     },
     getList() {
       this.listLoading = true
@@ -339,7 +384,7 @@ export default {
     },
     handleUpdate(obj){
       this.dialogFormVisible = true;
-      this.temp = obj;
+      this.temp = Object.assign({},obj);
     },
     handleDelete(row, index) {
       delByIds(this.target, {ids: [row.id]} ).then(() => {

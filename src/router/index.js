@@ -10,16 +10,12 @@ import Layout from '@/layout'
 import chartsRouter from './modules/charts'
 
 import canteenRouter from './modules/canteen'
-import carRouter from './modules/car'
 import deliveryOrderRouter from './modules/delivery-order'
 import dormitoryRouter from './modules/dormitory'
-import foodRouter from './modules/food'
 import goodsRouter from './modules/goods'
-import noteRouter from './modules/note'
 import parkingRouter from './modules/parking'
 import seatRouter from './modules/seat'
-import vindicateRouter from './modules/vindicate'
-
+import entertainmentRouter from './modules/entertainment'
 import registerRouter from './modules/register'
 import userRouter from './modules/user'
 
@@ -91,7 +87,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+        meta: { title: '首页', icon: 'dashboard', affix: true }
       }
     ]
   }
@@ -109,7 +105,7 @@ export const asyncRoutes = [
     alwaysShow: true, // will always show the root menu
     name: 'Permission',
     meta: {
-      title: 'Permission',
+      title: '权限管理',
       icon: 'lock',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
@@ -137,7 +133,7 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/role'),
         name: 'RolePermission',
         meta: {
-          title: 'Role Permission',
+          title: '角色管理',
           roles: ['admin']
         }
       }
@@ -145,17 +141,13 @@ export const asyncRoutes = [
   },
 
   /** when your routing map is too long, you can split it into small modules **/
-  canteenRouter,
-  carRouter,
-  deliveryOrderRouter,
-  dormitoryRouter,
-  foodRouter,
-  goodsRouter,
-  noteRouter,
   parkingRouter,
   seatRouter,
-  vindicateRouter,
-  
+  canteenRouter,
+  entertainmentRouter,
+  dormitoryRouter,
+  deliveryOrderRouter,
+  goodsRouter,
   userRouter,
   chartsRouter,
 

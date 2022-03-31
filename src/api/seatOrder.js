@@ -10,7 +10,7 @@ export function getList(query) {
 
 export function getById(id) {
   return request({
-    url: '/car/getOrderById',
+    url: '/seat/getOrderById',
     method: 'get',
     params:  id 
   })
@@ -18,7 +18,7 @@ export function getById(id) {
 
 export function save(data) {
   return request({
-    url: '/car/saveOrder',
+    url: '/seat/saveOrder',
     method: 'post',
     data
   })
@@ -27,8 +27,14 @@ export function save(data) {
 
 export function delByIds(ids) {
   return request({
-    url: '/car/delOrderByIds',
+    url: '/seat/delOrderByIds',
     method: 'post',
-    ids
+    params: ids,
+    params: query,
+    paramsSerializer: params => {
+      return qs.stringify(params, {
+        indices: false
+      })
+    }
   })
 }

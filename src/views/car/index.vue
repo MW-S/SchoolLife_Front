@@ -11,21 +11,21 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <!-- <el-table-column label="ID" prop="id" sortable="custom" align="center"  :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="车牌号" width="150px" align="center">
+      </el-table-column> -->
+      <el-table-column label="车牌号"  align="center">
         <template slot-scope="{row}">
           <span>{{ row.number }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户" width="150px" align="center">
+      <!-- <el-table-column label="用户" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.userId }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button  type="primary" size="mini" @click="handleUpdate(row)">
@@ -45,9 +45,9 @@
         <el-form-item label="车牌号" prop="number">
           <el-input v-model="temp.number" type="text" />
         </el-form-item>
-        <el-form-item label="用户" prop="userId">
+        <!-- <el-form-item label="用户" prop="userId">
           <el-input v-model="temp.userId" type="text" />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -299,9 +299,6 @@ export default {
       this.temp = {
         id: undefined,
         name: '',
-        type: '',
-        descript: '',
-        state: ''
       }
     },
     handleCreate() {
@@ -329,7 +326,7 @@ export default {
     },
     handleUpdate(obj){
       this.dialogFormVisible = true;
-      this.temp = obj;
+      this.temp = Object.assign({},obj);
     },
     handleDelete(row, index) {
       delByIds( {ids: [row.id]} ).then(() => {

@@ -8,7 +8,7 @@ const projectRouter = {
   redirect: 'noRedirect',
   name: 'Dormitory',
   meta: {
-    title: 'Dormitorys',
+    title: '宿舍管理',
     icon: 'chart'
   },
   children: [
@@ -16,7 +16,7 @@ const projectRouter = {
       path: 'index',
       component: () => import('@/views/dormitory/index'),
       name: 'DormitoryList',
-      meta: { title: 'Dormitory List', noCache: true }
+      meta: { title: '宿舍列表', noCache: true }
     }
   ]
 }

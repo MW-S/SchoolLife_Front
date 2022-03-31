@@ -8,7 +8,7 @@ const userRouter = {
   redirect: 'noRedirect',
   name: 'User',
   meta: {
-    title: 'User',
+    title: '用户管理',
     icon: 'chart'
   },
   children: [
@@ -16,7 +16,7 @@ const userRouter = {
       path: 'index',
       component: () => import('@/views/user/index'),
       name: 'UserList',
-      meta: { title: 'User List', noCache: true }
+      meta: { title: '用户列表', noCache: true }
     }
   ]
 }

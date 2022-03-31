@@ -23,7 +23,7 @@
       </el-table-column>
         <el-table-column label="供应饭堂" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.canteenId }}</span>
+          <span>{{ getCanteenName(row.canteenId) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="提供日期" width="150px" align="center">
@@ -56,10 +56,22 @@
           <el-input v-model="temp.name" type="text" />
         </el-form-item>
         <el-form-item label="供应饭堂" prop="canteenId">
-          <el-input v-model="temp.canteenId" type="text" />
+          <el-select v-model="temp.canteenId" placeholder="请选择">
+            <el-option
+              v-for="item in canteens"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="提供日期" prop="offerDate">
-          <el-input v-model="temp.offerDate" type="text" />
+          <el-date-picker
+              v-model="temp.offerDate"
+              value-format="yyyy-MM-dd"
+              type="date"
+              placeholder="选择日期">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="图片" prop="pictures">
           <el-input v-model="temp.pictures" type="textarea" />
@@ -139,9 +151,10 @@ export default {
   },
   data() {
     return {
+      canteens:[],
       target: "food",
       tableKey: 0,
-      list: null,
+      list: [],
       total: 0,
       listLoading: true,
       listQuery: {
@@ -185,8 +198,9 @@ export default {
     }
   },
   created() {
-    this.listQuery.isAdmin = this.$store.state.user.isAdmin
-    this.getList()
+    this.listQuery.isAdmin =  this.$store.state.user.isAdmin
+    // this.getCanteens()
+    this.getList();
   },
   methods: {
     uploadSuccess(data) {
@@ -210,6 +224,16 @@ export default {
           duration: 2000
         })
       })
+    },
+    getCanteenName(id){
+       var item ;
+      for(var index in this.canteens){
+        item = this.canteens[index]
+        if(item.id == id){
+          return item.name
+        }
+      }
+      return "该食堂不存在"
     },
     /*    getFile(event) {
       var file = event.target.files
@@ -263,11 +287,32 @@ export default {
     resetAdd() {
       this.addArr = []
     },
-    getList() {
+   async getList() {
+      const that = this
+      if(this.canteens.length == 0){
+        var res = await this.getCanteens();
+      }
+      that.listLoading = true
+      that.list = []
+      getList(that.target, that.listQuery).then(response => {
+        response.data.data.forEach(item=>{
+          // item.canteen = that.getCanteenName(item.id)
+          that.list.push(item)
+        })
+        that.total = response.data.size
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
+    getCanteens() {
       this.listLoading = true
-      getList(this.target, this.listQuery).then(response => {
-        this.list = response.data.data
-        this.total = response.data.size
+      getList("canteen", {
+        page: 1,
+        size: 30,
+      }).then(response => {
+        this.canteens = response.data.data
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
@@ -315,10 +360,7 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        name: '',
-        type: '',
-        descript: '',
-        state: ''
+        name: ''
       }
     },
     handleCreate() {
@@ -346,7 +388,7 @@ export default {
     },
     handleUpdate(obj){
       this.dialogFormVisible = true;
-      this.temp = obj;
+      this.temp = Object.assign({},obj);
     },
     handleDelete(row, index) {
       delByIds(this.target, {ids: [row.id]} ).then(() => {

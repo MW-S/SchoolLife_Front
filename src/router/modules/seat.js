@@ -8,7 +8,7 @@ const projectRouter = {
   redirect: 'noRedirect',
   name: 'Seat',
   meta: {
-    title: 'Seats',
+    title: '图书馆座位管理',
     icon: 'chart'
   },
   children: [
@@ -16,13 +16,13 @@ const projectRouter = {
       path: 'index',
       component: () => import('@/views/seat/index'),
       name: 'SeatList',
-      meta: { title: 'Seat List', noCache: true }
+      meta: { title: '座位列表', noCache: true }
     },
     {
       path: 'order',
       component: () => import('@/views/seat/order'),
       name: 'SeatOrderList',
-      meta: { title: 'SeatOrder List', noCache: true }
+      meta: { title: '预约订单列表', noCache: true }
     }
   ]
 }

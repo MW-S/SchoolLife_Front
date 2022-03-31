@@ -8,27 +8,27 @@ const projectRouter = {
   redirect: 'noRedirect',
   name: 'Parking',
   meta: {
-    title: 'Parkings',
+    title: '停车场管理',
     icon: 'chart'
   },
   children: [
     {
-      path: 'order',
-      component: () => import('@/views/parking/order'),
-      name: 'ParkingOrderList',
-      meta: { title: 'ParkingOrder List', noCache: true }
-    },
-    {
       path: 'index',
       component: () => import('@/views/parking/index'),
       name: 'ParkingList',
-      meta: { title: 'Parking List', noCache: true }
+      meta: { title: '车位列表', noCache: true }
     },
     {
       path: 'car',
       component: () => import('@/views/car/index'),
       name: 'CarList',
-      meta: { title: 'Car List', noCache: true }
+      meta: { title: '车辆列表', noCache: true }
+    },
+    {
+      path: 'order',
+      component: () => import('@/views/parking/order'),
+      name: 'ParkingOrderList',
+      meta: { title: '停车订单列表', noCache: true }
     }
   ]
 }

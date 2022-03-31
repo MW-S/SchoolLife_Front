@@ -16,12 +16,12 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="宿舍牌号" width="150px" align="center">
+      <el-table-column label="宿舍牌号"  align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="所属栋" width="150px" align="center">
+      <el-table-column label="所属栋"  align="center">
         <template slot-scope="{row}">
           <span>{{ row.location }}</span>
         </template>
@@ -330,7 +330,7 @@ export default {
     },
     handleUpdate(obj){
       this.dialogFormVisible = true;
-      this.temp = obj;
+      this.temp = Object.assign({},obj);
     },
     handleDelete(row, index) {
       delByIds(this.target, {ids: [row.id]} ).then(() => {

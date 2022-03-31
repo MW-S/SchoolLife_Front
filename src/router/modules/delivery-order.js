@@ -8,7 +8,7 @@ const projectRouter = {
   redirect: 'noRedirect',
   name: 'DeliveryOrder',
   meta: {
-    title: 'DeliveryOrders',
+    title: '跑腿管理',
     icon: 'chart'
   },
   children: [
@@ -16,7 +16,7 @@ const projectRouter = {
       path: 'index',
       component: () => import('@/views/delivery-order/index'),
       name: 'DeliveryOrderList',
-      meta: { title: 'DeliveryOrder List', noCache: true }
+      meta: { title: '跑腿订单列表', noCache: true }
     }
   ]
 }

@@ -11,32 +11,32 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <!-- <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="代购物品名" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="价格" width="150px" align="center">
+      <el-table-column label="价格" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="佣金"  align="center" >
+      <el-table-column label="佣金"  width="100px" align="center" >
         <template slot-scope="{row}">
           <span>{{ row.commission }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注"  align="center" >
+      <el-table-column label="备注"  width="150px" align="center" >
         <template slot-scope="{row}">
           <span>{{ row.tag }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地址"  align="center" >
+      <el-table-column label="地址"  width="200px"  align="center" >
         <template slot-scope="{row}">
           <span>{{ row.address }}</span>
         </template>
@@ -46,22 +46,22 @@
           <span>{{ stateText[row.state] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户"  align="center" >
+      <el-table-column label="用户"    align="center" >
         <template slot-scope="{row}">
-          <span>{{ row.userId }}</span>
+          <span>{{ getUserName(row.userId) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户电话"  align="center" >
+      <el-table-column label="用户电话"  width="120px" align="center" >
         <template slot-scope="{row}">
           <span>{{ row.userPhone }}</span>
         </template>
       </el-table-column>   
-      <el-table-column label="骑手"  align="center" >
+      <el-table-column label="骑手"   align="center" >
         <template slot-scope="{row}">
-          <span>{{ row.serverId }}</span>
+          <span>{{ getUserName(row.serverId) }}</span>
         </template>
       </el-table-column>   
-      <el-table-column label="骑手电话"  align="center" >
+      <el-table-column label="骑手电话"  width="120px" align="center" >
         <template slot-scope="{row}">
           <span>{{ row.serverPhone }}</span>
         </template>
@@ -95,7 +95,14 @@
           <el-input v-model="temp.userPhone" type="text" />
         </el-form-item>
         <el-form-item label="状态" prop="state">
-          <el-select v-model="temp.state" type="text" />
+          <el-select v-model="temp.state" placeholder="请选择" >
+             <el-option
+              v-for="(item, index)  in stateText"
+              :key="index"
+              :label="item"
+              :value="index">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="tag">
           <el-input v-model="temp.tag" type="textarea" />
@@ -139,6 +146,7 @@
 </template>
 
 <script>
+import * as user from '@/api/user'
 import { getList, getById, save, delByIds } from '@/api/common'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -179,9 +187,10 @@ export default {
   data() {
     return {
       target:"deliveryOrder",
-      stateText: ["取货中", "配送中", "已送达"],
+      stateText: {"0": "取货中", "1": "配送中", "2": "已送达"},
       tableKey: 0,
-      list: null,
+      list: [],
+      users: [],
       total: 0,
       listLoading: true,
       listQuery: {
@@ -226,6 +235,7 @@ export default {
   },
   created() {
     this.listQuery.isAdmin = this.$store.state.user.isAdmin
+    this.getUsers()
     this.getList()
   },
   methods: {
@@ -302,6 +312,37 @@ export default {
     }, */
     resetAdd() {
       this.addArr = []
+    },
+    getUserName(id){
+       var res = "未指派"
+      this.users.forEach(item=>{
+        if(item.id == id){
+          res =  item.name;
+        }
+      })
+      return res;
+    },
+    hasUser(id){
+      var res = false;
+      this.users.forEach(item=>{
+        if(item.id == id){
+          res =  true;
+        }
+      })
+      return res;
+    },
+    getUsers(){
+      this.listLoading = true
+      user.getList({
+        page: 1,
+        size: 100,
+      }).then(response => {
+        this.users = response.data.data
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
     },
     getList() {
       this.listLoading = true
@@ -386,7 +427,7 @@ export default {
     },
     handleUpdate(obj){
       this.dialogFormVisible = true;
-      this.temp = obj;
+      this.temp = Object.assign({},obj);
     },
     handleDelete(row, index) {
       delByIds(this.target, {ids: [row.id]} ).then(() => {

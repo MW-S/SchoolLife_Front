@@ -8,7 +8,7 @@ const registerRouter = {
   hidden: true,
   component: () => import('@/views/register/index'),
   name: 'RegisterPage',
-  meta: { title: 'Register Page', noCache: true }
+  meta: { title: '注册', noCache: true }
 }
 
 export default registerRouter
