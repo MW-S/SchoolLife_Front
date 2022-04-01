@@ -1,45 +1,45 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="handleAddRole">New Role</el-button>
+    <el-button type="primary" @click="handleAddRole">添加</el-button>
 
     <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
-      <el-table-column align="center" label="Role Key" width="220">
+      <!-- <el-table-column align="center" label="Role Key" width="220">
         <template slot-scope="scope">
           {{ scope.row.key }}
         </template>
-      </el-table-column>
-      <el-table-column align="center" label="Role Name" width="220">
+      </el-table-column> -->
+      <el-table-column align="center" label="角色">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column align="header-center" label="Description">
+      <!-- <el-table-column align="header-center" label="Description">
         <template slot-scope="scope">
           {{ scope.row.description }}
         </template>
-      </el-table-column>
-      <el-table-column align="center" label="Operations">
+      </el-table-column> -->
+      <el-table-column align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="handleEdit(scope)">Edit</el-button>
-          <el-button type="danger" size="small" @click="handleDelete(scope)">Delete</el-button>
+          <el-button type="primary" size="small" @click="handleEdit(scope)">编辑</el-button>
+          <el-button type="danger" size="small" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-dialog :visible.sync="dialogVisible" :title="dialogType==='edit'?'Edit Role':'New Role'">
+    <el-dialog :visible.sync="dialogVisible" :title="dialogType==='edit'?'编辑角色':'添加角色'">
       <el-form :model="role" label-width="80px" label-position="left">
-        <el-form-item label="Name">
+        <el-form-item label="角色">
           <el-input v-model="role.name" placeholder="Role Name" />
         </el-form-item>
-        <el-form-item label="Desc">
+        <!-- <el-form-item label="Desc">
           <el-input
             v-model="role.description"
             :autosize="{ minRows: 2, maxRows: 4}"
             type="textarea"
             placeholder="Role Description"
           />
-        </el-form-item>
-        <el-form-item label="Menus">
+        </el-form-item> -->
+        <!-- <el-form-item label="Menus">
           <el-tree
             ref="tree"
             :check-strictly="checkStrictly"
@@ -49,11 +49,11 @@
             node-key="path"
             class="permission-tree"
           />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div style="text-align:right;">
-        <el-button type="danger" @click="dialogVisible=false">Cancel</el-button>
-        <el-button type="primary" @click="confirmRole">Confirm</el-button>
+        <el-button type="danger" @click="dialogVisible=false">取消</el-button>
+        <el-button type="primary" @click="confirmRole">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -93,7 +93,7 @@ export default {
   },
   created() {
     // Mock: get all routes and roles list from server
-    this.getRoutes()
+    // this.getRoutes()
     this.getRoles()
   },
   methods: {
@@ -102,9 +102,14 @@ export default {
       this.serviceRoutes = res.data
       this.routes = this.generateRoutes(res.data)
     },
-    async getRoles() {
-      const res = await getRoles()
-      this.rolesList = res.data
+    getRoles() {
+      getRoles({
+        page: 1,
+        size: 100
+      }).then(res=>{
+        this.rolesList = res.data.data
+      })
+      
     },
 
     // Reshape the routes structure so that it looks the same as the sidebar
@@ -203,36 +208,10 @@ export default {
     },
     async confirmRole() {
       const isEdit = this.dialogType === 'edit'
-
-      const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.role.routes = this.generateTree(deepClone(this.serviceRoutes), '/', checkedKeys)
-
-      if (isEdit) {
-        await updateRole(this.role.key, this.role)
-        for (let index = 0; index < this.rolesList.length; index++) {
-          if (this.rolesList[index].key === this.role.key) {
-            this.rolesList.splice(index, 1, Object.assign({}, this.role))
-            break
-          }
-        }
-      } else {
-        const { data } = await addRole(this.role)
-        this.role.key = data.key
-        this.rolesList.push(this.role)
-      }
-
-      const { description, key, name } = this.role
+      var role = Object.assign({}, this.role);
+      await addRole(role);
+      this.getRoles()
       this.dialogVisible = false
-      this.$notify({
-        title: 'Success',
-        dangerouslyUseHTMLString: true,
-        message: `
-            <div>Role Key: ${key}</div>
-            <div>Role Name: ${name}</div>
-            <div>Description: ${description}</div>
-          `,
-        type: 'success'
-      })
     },
     // reference: src/view/layout/components/Sidebar/SidebarItem.vue
     onlyOneShowingChild(children = [], parent) {

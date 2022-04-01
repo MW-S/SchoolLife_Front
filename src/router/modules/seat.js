@@ -14,13 +14,13 @@ const projectRouter = {
   children: [
     {
       path: 'index',
-      component: () => import('@/views/seat/index'),
+      component: () => import('@/views/core/seat/index'),
       name: 'SeatList',
       meta: { title: '座位列表', noCache: true }
     },
     {
       path: 'order',
-      component: () => import('@/views/seat/order'),
+      component: () => import('@/views/core/seat/order'),
       name: 'SeatOrderList',
       meta: { title: '预约订单列表', noCache: true }
     }

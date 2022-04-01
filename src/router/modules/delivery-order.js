@@ -14,7 +14,7 @@ const projectRouter = {
   children: [
     {
       path: 'index',
-      component: () => import('@/views/delivery-order/index'),
+      component: () => import('@/views/core/delivery-order/index'),
       name: 'DeliveryOrderList',
       meta: { title: '跑腿订单列表', noCache: true }
     }

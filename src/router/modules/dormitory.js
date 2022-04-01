@@ -14,7 +14,7 @@ const projectRouter = {
   children: [
     {
       path: 'index',
-      component: () => import('@/views/dormitory/index'),
+      component: () => import('@/views/core/dormitory/index'),
       name: 'DormitoryList',
       meta: { title: '宿舍列表', noCache: true }
     }

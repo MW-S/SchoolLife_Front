@@ -14,13 +14,13 @@ const projectRouter = {
   children: [
     {
       path: 'index',
-      component: () => import('@/views/canteen/index'),
+      component: () => import('@/views/core/canteen/index'),
       name: 'CanteenList',
       meta: { title: '饭堂列表', noCache: true }
     },
     {
       path: 'food',
-      component: () => import('@/views/food/index'),
+      component: () => import('@/views/core/canteen/food'),
       name: 'FoodList',
       meta: { title: '菜谱列表', noCache: true }
     }

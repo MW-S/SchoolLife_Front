@@ -14,7 +14,7 @@ const userRouter = {
   children: [
     {
       path: 'index',
-      component: () => import('@/views/user/index'),
+      component: () => import('@/views/core/user/index'),
       name: 'UserList',
       meta: { title: '用户列表', noCache: true }
     }

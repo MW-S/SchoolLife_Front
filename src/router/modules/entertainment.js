@@ -14,13 +14,13 @@ const projectRouter = {
   children: [
     {
       path: 'note',
-      component: () => import('@/views/note/index'),
+      component: () => import('@/views/core/entertainment/note'),
       name: 'NoteList',
       meta: { title: '动态列表', noCache: true }
     },
     {
       path: 'vindicate',
-      component: () => import('@/views/vindicate/index'),
+      component: () => import('@/views/core/entertainment/vindicate'),
       name: 'VindicateList',
       meta: { title: '告白列表', noCache: true }
     }

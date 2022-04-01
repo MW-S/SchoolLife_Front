@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
 export function getRoutes() {
   return request({
@@ -7,32 +8,31 @@ export function getRoutes() {
   })
 }
 
-export function getRoles() {
+export function getRoles(query) {
   return request({
-    url: '/vue-element-admin/roles',
-    method: 'get'
+    url: '/role/getList',
+    method: 'get',
+    params: query
   })
 }
 
 export function addRole(data) {
   return request({
-    url: '/vue-element-admin/role',
+    url: '/role/save',
     method: 'post',
     data
   })
 }
 
-export function updateRole(id, data) {
+export function deleteRole(ids) {
   return request({
-    url: `/vue-element-admin/role/${id}`,
-    method: 'put',
-    data
-  })
-}
-
-export function deleteRole(id) {
-  return request({
-    url: `/vue-element-admin/role/${id}`,
-    method: 'delete'
+    url: `/role/delByIds`,
+    method: 'post',
+    params: ids,
+    paramsSerializer: params => {
+      return qs.stringify(params, {
+        indices: false
+      })
+    }
   })
 }

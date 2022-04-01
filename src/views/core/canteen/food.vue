@@ -75,6 +75,19 @@
         </el-form-item>
         <el-form-item label="图片" prop="pictures">
           <el-input v-model="temp.pictures" type="textarea" />
+          <el-upload
+            class="upload-demo"
+            :action="serverUrl + '/uploadOss'"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-remove="beforeRemove"
+            multiple
+            :limit="3"
+            :on-exceed="handleExceed"
+            :file-list="fileList">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -151,6 +164,8 @@ export default {
   },
   data() {
     return {
+      serverUrl: this.SERVERURL,
+      fileList: [],
       canteens:[],
       target: "food",
       tableKey: 0,
@@ -203,27 +218,17 @@ export default {
     this.getList();
   },
   methods: {
-    uploadSuccess(data) {
-      console.log(data)
-      this.dialogAddFile = data
-      this.$notify({
-        title: 'Success',
-        message: 'Upload Successfully',
-        type: 'success',
-        duration: 2000
-      })
-      const tempData = Object.assign({}, this.temp)
-      updateTask(tempData).then(() => {
-        const index = this.list.findIndex(v => v.id === tempData.id)
-        this.list.splice(index, 1, tempData)
-        this.dialogFormVisible = false
-        this.$notify({
-          title: 'Success',
-          message: 'Update Successfully',
-          type: 'success',
-          duration: 2000
-        })
-      })
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${ file.name }？`);
     },
     getCanteenName(id){
        var item ;

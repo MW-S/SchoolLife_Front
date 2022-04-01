@@ -18,8 +18,12 @@ import './icons' // icon
 import './permission' // permission control
 import './utils/error-log' // error log
 
+
 import * as filters from './filters' // global filters
 
+import serverUrl from'./utils/server'
+
+Vue.prototype.SERVERURL = serverUrl;
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

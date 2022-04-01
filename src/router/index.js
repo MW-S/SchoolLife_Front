@@ -149,7 +149,7 @@ export const asyncRoutes = [
   deliveryOrderRouter,
   goodsRouter,
   userRouter,
-  chartsRouter,
+  // chartsRouter,
 
   {
     path: '/error',

@@ -14,7 +14,7 @@ const projectRouter = {
   children: [
     {
       path: 'index',
-      component: () => import('@/views/goods/index'),
+      component: () => import('@/views/core/goods/index'),
       name: 'Goods',
       meta: { title: '闲置物品列表', noCache: true }
     }
