@@ -73,19 +73,23 @@
               placeholder="选择日期">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="图片" prop="pictures">
-          <el-input v-model="temp.pictures" type="textarea" />
+        <el-form-item label="图片" >
+          <!-- <el-input v-model="temp.pictures" type="textarea" /> -->
           <el-upload
             class="upload-demo"
-            :action="serverUrl + '/uploadOss'"
+            action=""
+            :http-request="uploadFile"
             :on-preview="handlePreview"
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
             multiple
             :limit="3"
             :on-exceed="handleExceed"
+            list-type="picture-card"
             :file-list="fileList">
-            <el-button size="small" type="primary">点击上传</el-button>
+            <!-- <img v-for="file in fileList" :src="file.url" class="avatar" />  -->
+						<i class="el-icon-plus"></i>
+            <!-- <el-button size="small" type="primary">点击上传</el-button> -->
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
         </el-form-item>
@@ -117,15 +121,14 @@
         <el-button size="small" @click="resetAdd()">全部删除</el-button>
       </div>
     </el-dialog> -->
-    <el-dialog title="文件上传" :visible.sync="dialogAddFile">
-      <upload :id="temp.id" @child-event="uploadSuccess" />
+    <el-dialog :visible.sync="dialogPreviewVisible" :modal-append-to-body="false"> 
+      <img width="100%" :src="dialogImageUrl" alt>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { getList, getById, save, delByIds } from '@/api/common'
+import { getList, getById, save, delByIds, uploadFile} from '@/api/common'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -168,6 +171,8 @@ export default {
       fileList: [],
       canteens:[],
       target: "food",
+      dialogImageUrl: "",
+      dialogPreviewVisible: false,
       tableKey: 0,
       list: [],
       total: 0,
@@ -218,11 +223,25 @@ export default {
     this.getList();
   },
   methods: {
+    uploadFile(param){
+      var formData = new FormData()
+      formData.append('file', param.file)
+      uploadFile(formData).then(response => {
+        console.log('上传图片成功')
+        this.fileList.push({
+            name: param.file.name,
+            url: this.SERVERURL  + response.data.path
+          })
+      }).catch(response => {
+        console.log('图片上传失败')
+      })
+    },
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      this.fileList.splice(this.fileList.indexOf(file),1)
     },
     handlePreview(file) {
-      console.log(file);
+      this.dialogImageUrl = file.url;
+		  this.dialogPreviewVisible = true;
     },
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);

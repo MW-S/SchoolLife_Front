@@ -15,7 +15,11 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
+    if(config.url.indexOf("uploadOss") != -1){
+      // config.headers['head']['Content-Type'] = 'multipart/form-data'
+      // config.headers['post']['Content-Type'] = 'multipart/form-data'
+      // config.headers['Content-Type'] = 'multipart/form-data'
+    }
     if (getJWTToken()) {
       // let each request carry token
       // ['X-Token'] is a custom headers key

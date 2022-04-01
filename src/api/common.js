@@ -38,3 +38,14 @@ export function delByIds(target, query) {
     }
   })
 }
+
+export function uploadFile(file) {
+  return request({
+    url: '/uploadOss',
+    method: 'post',
+    headers: {
+      "Content-Type":"multipart/form-data"
+    },
+    data: file
+  })
+}
